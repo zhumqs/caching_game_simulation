@@ -25,7 +25,7 @@ public class PreferenceSimilarityCalculator {
         defaultContents = DataParseUtils.getContentsFromCsv();
     }
 
-    private double getUserPreferenceSimilarity(int userId1, int userId2, long start, long end) {
+    public double getUserPreferenceSimilarity(int userId1, int userId2, long start, long end) {
         if (defaultContents == null || defaultContents.size() == 0) {
             log.error("content.csv is empty!");
             return 0.0;

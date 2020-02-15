@@ -237,6 +237,56 @@ public class DataParseUtils {
         return contents;
     }
 
+    public static List<TrustRecord> getTrustRecordFromCsv() {
+        URL url = Content.class.getClassLoader().getResource("trust_record.csv");
+        if (url == null) {
+            log.error("trust_record.csv not exist!");
+            return null;
+        }
+        List<TrustRecord> records = new ArrayList<>();
+        try {
+            String readPath = url.getPath();
+            File inFile = new File(readPath);
+            BufferedReader reader = new BufferedReader(new FileReader(inFile));
+            String header = "";
+            if (reader.ready()) {
+                header = reader.readLine();
+            }
+            String[] headers = header.split(";");
+            while (reader.ready()) {
+                String line = reader.readLine();
+                StringTokenizer st = new StringTokenizer(line, ";");
+                if (st.hasMoreTokens()) {
+                    TrustRecord record = new TrustRecord();
+                    // fromUserId,toUserId,preferenceSimilarity,cooperativeCapacity,socialReciprocity,decision,priorProbability,timestamp
+                    for (String field : headers) {
+                        if ("fromUserId".equals(field)) {
+                            record.setFromUserId(Integer.valueOf(st.nextToken().trim()));
+                        } else if ("toUserId".equals(field)) {
+                            record.setToUserId(Integer.valueOf(st.nextToken().trim()));
+                        } else if ("preferenceSimilarity".equals(field)){
+                            record.setPreferenceSimilarity(Double.valueOf(st.nextToken().trim()));
+                        } else if ("cooperativeCapacity".equals(field)) {
+                            record.setCooperativeCapacity(Double.valueOf(st.nextToken().trim()));
+                        } else if ("socialReciprocity".equals(field)){
+                            record.setSocialReciprocity(Double.valueOf(st.nextToken().trim()));
+                        } else if ("decision".equals(field)) {
+                            record.setDecision(Integer.valueOf(st.nextToken().trim()));
+                        } else if ("priorProbability".equals(field)) {
+                            record.setPriorProbability(Double.valueOf(st.nextToken().trim()));
+                        } else {
+                            record.setTimestamp(Long.valueOf(st.nextToken().trim()));
+                        }
+                    }
+                    records.add(record);
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return records;
+    }
+
     public static void parseCsvOld() {
         try {
 
@@ -392,6 +442,9 @@ public class DataParseUtils {
 
         List<MobileUser> users = DataParseUtils.getMobileUsersFromCsv();
         log.info(JSONObject.toJSONString(users));
+
+        List<TrustRecord> records = DataParseUtils.getTrustRecordFromCsv();
+        log.info(JSONObject.toJSONString(receives));
      }
 
 }

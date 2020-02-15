@@ -4,6 +4,7 @@ import com.zhumqs.model.ContentReceive;
 import com.zhumqs.model.ContentRequest;
 import com.zhumqs.model.ContentTransmission;
 import com.zhumqs.util.DataParseUtils;
+import com.zhumqs.util.MathUtils;
 import com.zhumqs.util.RandomUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +26,14 @@ public class SocialReciprocityCalculator {
         requestList = DataParseUtils.getRequestFromCsv();
         receiveList = DataParseUtils.getReceiveFromCsv();
         transmissionList = DataParseUtils.getTransmissionFromCsv();
+    }
+
+    public double getSocialReciprocity(int fromUserId, int toUserId, long start, long end) {
+        double mutualAidInterval = getAverageMutualAidInterval(fromUserId, toUserId, start, end);
+        if (mutualAidInterval == 0) {
+            return 0;
+        }
+        return (2/Math.PI) * MathUtils.arccot(mutualAidInterval);
     }
 
     private double getAverageMutualAidInterval(int fromUserId, int toUserId, long start, long end) {

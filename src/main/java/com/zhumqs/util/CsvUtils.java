@@ -9,6 +9,7 @@ import java.util.*;
 import com.csvreader.CsvWriter;
 import com.zhumqs.constants.ExperimentConstants;
 import com.zhumqs.model.Content;
+import com.zhumqs.model.TrustRecord;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -91,11 +92,41 @@ public class CsvUtils {
         return contents;
     }
 
+    private static List<TrustRecord> mockTrustRecord() {
+        List<TrustRecord> mockRecords = new ArrayList<>();
+        for (int i = 1; i <= 75; i++) {
+            for (int j = 1; j <= 75; j++) {
+                TrustRecord record = new TrustRecord();
+                record.setFromUserId(i);
+                record.setToUserId(j);
+                // 0: unreliable 1: reliable 2: observed
+                record.setDecision(RandomUtils.getRandom(3));
+                record.setPriorProbability(0.5);
+                record.setTimestamp(System.currentTimeMillis() - 5 * 60 * 60 * 1000);
+                try {
+                    Thread.sleep(RandomUtils.getRandom(20));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                record.setSocialReciprocity(0);
+                record.setCooperativeCapacity(0);
+                record.setPreferenceSimilarity(0);
+                mockRecords.add(record);
+            }
+        }
+        return mockRecords;
+    }
+
     public static void main(String[] args) {
-        String csvFileName = "content.csv";
-        String csvPath = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName;
-        log.info(csvPath);
-        writeCsv(mockContent(), csvPath);
+//        String csvFileName = "content.csv";
+//        String csvPath = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName;
+//        log.info(csvPath);
+//        writeCsv(mockContent(), csvPath);
+
+        String csvFileName1 = "trust_record.csv";
+        String csvPath1 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
+        log.info(csvPath1);
+        writeCsv(mockTrustRecord(), csvPath1);
     }
 
 }
