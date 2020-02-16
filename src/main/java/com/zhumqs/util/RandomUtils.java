@@ -15,4 +15,8 @@ public class RandomUtils {
         Random r = new Random();
         return r.nextInt(a);
     }
+
+    public static int getPlusOrMinus() {
+        return Math.random() > 0.5 ? 1 : -1;
+    }
 }

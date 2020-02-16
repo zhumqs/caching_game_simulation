@@ -43,7 +43,7 @@ public class PreferenceSimilarityCalculator {
         return sum1 / (sum2 * sum3);
     }
 
-    private double getUserPreferenceToContent(int userId, long start, long end, Content content) {
+    public double getUserPreferenceToContent(int userId, long start, long end, Content content) {
         double preferenceSum = 0.0;
         List<Integer> themeList = content.getThemeList();
         for (Integer theme : themeList) {

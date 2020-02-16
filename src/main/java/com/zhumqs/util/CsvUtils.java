@@ -9,6 +9,7 @@ import java.util.*;
 import com.csvreader.CsvWriter;
 import com.zhumqs.constants.ExperimentConstants;
 import com.zhumqs.model.Content;
+import com.zhumqs.model.MobileUser;
 import com.zhumqs.model.TrustRecord;
 import lombok.extern.slf4j.Slf4j;
 
@@ -99,34 +100,65 @@ public class CsvUtils {
                 TrustRecord record = new TrustRecord();
                 record.setFromUserId(i);
                 record.setToUserId(j);
+                List<TrustRecord.TrustValue> values = new ArrayList<>();
+                TrustRecord.TrustValue value = new TrustRecord.TrustValue();
                 // 0: unreliable 1: reliable 2: observed
-                record.setDecision(RandomUtils.getRandom(3));
-                record.setPriorProbability(0.5);
-                record.setTimestamp(System.currentTimeMillis() - 5 * 60 * 60 * 1000);
-                try {
-                    Thread.sleep(RandomUtils.getRandom(20));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                record.setSocialReciprocity(0);
-                record.setCooperativeCapacity(0);
-                record.setPreferenceSimilarity(0);
+                value.setDecision(RandomUtils.getRandom(3));
+                value.setPriorProbability(0.5);
+                value.setTimestamp(System.currentTimeMillis() - 5 * 60 * 60 * 1000);
+                value.setSocialReciprocity(0);
+                value.setCooperativeCapacity(0);
+                value.setPreferenceSimilarity(0);
+                values.add(value);
+
+                TrustRecord.TrustValue value1 = new TrustRecord.TrustValue();
+                // 0: unreliable 1: reliable 2: observed
+                value1.setDecision(RandomUtils.getRandom(3));
+                value1.setPriorProbability(0.5);
+                value1.setTimestamp(System.currentTimeMillis() - 5 * 60 * 60 * 1000);
+                value1.setSocialReciprocity(0);
+                value1.setPreferenceSimilarity(0);
+                value1.setCooperativeCapacity(0);
+                values.add(value1);
+
+                record.setValues(values);
                 mockRecords.add(record);
             }
         }
         return mockRecords;
     }
 
-    public static void main(String[] args) {
-//        String csvFileName = "content.csv";
-//        String csvPath = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName;
-//        log.info(csvPath);
-//        writeCsv(mockContent(), csvPath);
+    // 32.114967(经度:Longitude),118.928547(纬度:Latitude)
+    private static List<MobileUser> mockMobileUsers() {
+        List<MobileUser> users = new ArrayList<>();
+        for (int i = 1; i <= 75; i++) {
+            MobileUser user = new MobileUser();
+            user.setUserId(i);
+            user.setCity(RandomUtils.getRandomInterval(1, 20));
+            user.setInstitute(RandomUtils.getRandomInterval(1, 30));
+            user.setCountry(RandomUtils.getRandomInterval(1, 20));
+            user.setLongitude(32.114967 + RandomUtils.getRandomInterval(10, 800) * 0.000001 * RandomUtils.getPlusOrMinus());
+            user.setLatitude(118.928547 + RandomUtils.getRandomInterval(10, 800) * 0.000001 * RandomUtils.getPlusOrMinus());
+            users.add(user);
+        }
+        return users;
+    }
 
-        String csvFileName1 = "trust_record.csv";
+    public static void main(String[] args) {
+        //String csvFileName = "content.csv";
+        //String csvPath = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName;
+        //log.info(csvPath);
+        //writeCsv(mockContent(), csvPath);
+
+        //String csvFileName1 = "trust_record.csv";
+        //String csvPath1 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
+        //log.info(csvPath1);
+        //writeCsv(mockTrustRecord(), csvPath1);
+
+        String csvFileName1 = "mobile_user.csv";
         String csvPath1 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
         log.info(csvPath1);
-        writeCsv(mockTrustRecord(), csvPath1);
+        writeCsv(mockMobileUsers(), csvPath1);
     }
 
 }

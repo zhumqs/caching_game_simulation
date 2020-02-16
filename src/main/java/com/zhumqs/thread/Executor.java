@@ -78,7 +78,7 @@ public class Executor {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error("update csv failed, {}", e.getMessage());
                 }
             }
         }

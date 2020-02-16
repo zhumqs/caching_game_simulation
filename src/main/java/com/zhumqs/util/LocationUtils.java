@@ -1,9 +1,12 @@
 package com.zhumqs.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * @author mingqizhu
  * @date 20191201
  */
+@Slf4j
 public class LocationUtils {
     private static double EARTH_RADIUS = 6378.137;
 
@@ -35,8 +38,14 @@ public class LocationUtils {
     }
 
     public static void main(String[] args) {
-        double distance = getDistance(34.2675560000, 108.9534750000,
-                34.2464320000, 108.9534750000);
-        System.out.println("距离" + distance + "m");
+        for (int i = 1; i <= 100; i++) {
+            double lng = 32.114967 -  RandomUtils.getRandomInterval(10, 800) * 0.000001 * RandomUtils.getPlusOrMinus();
+            double lat = 118.928547 + RandomUtils.getRandomInterval(10, 800) * 0.000001 * RandomUtils.getPlusOrMinus();
+            double distance = getDistance(32.114967, 118.928547,
+                    lng, lat);
+            log.info("经度: {}, 纬度: {}", lng, lat);
+            log.info("距离" + distance + "m");
+
+        }
     }
 }

@@ -10,9 +10,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author mingqizhu
@@ -26,11 +26,12 @@ public class DataParseUtils {
     public static List<Reception> receptions = new ArrayList<Reception>();
     public static List<Transmission> transmissions = new ArrayList<Transmission>();
     public static List<Proximity> proximities = new ArrayList<Proximity>();
+    public static final String PATTERN = "(?<=\\()[^\\)]+";
 
     public static List<MobileUser> getMobileUsersFromCsv() {
-        URL url = Content.class.getClassLoader().getResource("participants.csv");
+        URL url = Content.class.getClassLoader().getResource("mobile_user.csv");
         if (url == null) {
-            log.error("participants.csv not exist!");
+            log.error("mobile_user.csv not exist!");
             return null;
         }
         List<MobileUser> users = new ArrayList<MobileUser>();
@@ -38,26 +39,33 @@ public class DataParseUtils {
             String readPath = url.getPath();
             File inFile = new File(readPath);
             BufferedReader reader = new BufferedReader(new FileReader(inFile));
-            MobileUser user = new MobileUser();
+            String header = "";
+            if (reader.ready()) {
+                header = reader.readLine();
+            }
+            String[] headers = header.split(";");
             while (reader.ready()) {
                 String line = reader.readLine();
                 StringTokenizer st = new StringTokenizer(line, ";");
                 if (st.hasMoreTokens()) {
-                    int userId = Integer.valueOf(st.nextToken().trim());
-                    String key = st.nextToken().trim();
-                    int value = Integer.valueOf(st.nextToken().trim());
-                    if ("insitute".equals(key)) {
-                        if (userId != 1) {
-                            user = new MobileUser();
+                    MobileUser user = new MobileUser();
+                    //userId;institute;city;country;longitude;latitude
+                    for (String field : headers) {
+                        if ("userId".equals(field)) {
+                            user.setUserId(Integer.valueOf(st.nextToken().trim()));
+                        } else if ("institute".equals(field)) {
+                            user.setInstitute(Integer.valueOf(st.nextToken().trim()));
+                        } else if ("city".equals(field)) {
+                            user.setCity(Integer.valueOf(st.nextToken().trim()));
+                        } else if ("country".equals(field)) {
+                            user.setCountry(Integer.valueOf(st.nextToken().trim()));
+                        } else if ("latitude".equals(field)){
+                            user.setLatitude(Double.valueOf(st.nextToken().trim()));
+                        } else {
+                            user.setLongitude(Double.valueOf(st.nextToken().trim()));
                         }
-                        user.setUserId(userId);
-                        user.setInstitute(value);
-                    } else if ("city".equals(key)) {
-                        user.setCity(value);
-                    } else {
-                        user.setCountry(value);
-                        users.add(user);
                     }
+                    users.add(user);
                 }
             }
         } catch (IOException e) {
@@ -258,24 +266,41 @@ public class DataParseUtils {
                 StringTokenizer st = new StringTokenizer(line, ";");
                 if (st.hasMoreTokens()) {
                     TrustRecord record = new TrustRecord();
-                    // fromUserId,toUserId,preferenceSimilarity,cooperativeCapacity,socialReciprocity,decision,priorProbability,timestamp
+                    // fromUserId;toUserId;values
                     for (String field : headers) {
                         if ("fromUserId".equals(field)) {
                             record.setFromUserId(Integer.valueOf(st.nextToken().trim()));
                         } else if ("toUserId".equals(field)) {
                             record.setToUserId(Integer.valueOf(st.nextToken().trim()));
-                        } else if ("preferenceSimilarity".equals(field)){
-                            record.setPreferenceSimilarity(Double.valueOf(st.nextToken().trim()));
-                        } else if ("cooperativeCapacity".equals(field)) {
-                            record.setCooperativeCapacity(Double.valueOf(st.nextToken().trim()));
-                        } else if ("socialReciprocity".equals(field)){
-                            record.setSocialReciprocity(Double.valueOf(st.nextToken().trim()));
-                        } else if ("decision".equals(field)) {
-                            record.setDecision(Integer.valueOf(st.nextToken().trim()));
-                        } else if ("priorProbability".equals(field)) {
-                            record.setPriorProbability(Double.valueOf(st.nextToken().trim()));
                         } else {
-                            record.setTimestamp(Long.valueOf(st.nextToken().trim()));
+                            String content = st.nextToken().trim();
+                            List<TrustRecord.TrustValue> values = new ArrayList<>();
+                            Pattern pattern = Pattern.compile(PATTERN);
+                            Matcher matcher = pattern.matcher(content);
+                            while(matcher.find()){
+                                TrustRecord.TrustValue value = new TrustRecord.TrustValue();
+                                String[] kvArr = matcher.group().split(",");
+                                // preferenceSimilarity,cooperativeCapacity,socialReciprocity,decision,priorProbability,timestamp
+                                for (String s : kvArr) {
+                                    String[] kv = s.trim().split("=");
+                                    String k = kv[0], v = kv[1];
+                                    if ("preferenceSimilarity".equals(k)){
+                                        value.setPreferenceSimilarity(Double.valueOf(v));
+                                    } else if ("cooperativeCapacity".equals(k)) {
+                                        value.setCooperativeCapacity(Double.valueOf(v));
+                                    } else if ("socialReciprocity".equals(k)){
+                                        value.setSocialReciprocity(Double.valueOf(v));
+                                    } else if ("decision".equals(k)) {
+                                        value.setDecision(Integer.valueOf(v));
+                                    } else if ("priorProbability".equals(k)) {
+                                        value.setPriorProbability(Double.valueOf(v));
+                                    } else {
+                                        value.setTimestamp(Long.valueOf(v));
+                                    }
+                                }
+                                values.add(value);
+                            }
+                            record.setValues(values);
                         }
                     }
                     records.add(record);
@@ -285,6 +310,45 @@ public class DataParseUtils {
             e.printStackTrace();
         }
         return records;
+    }
+
+    public static List<MobileUser> getParticipantsFromCsv() {
+        URL url = Content.class.getClassLoader().getResource("participants.csv");
+        if (url == null) {
+            log.error("participants.csv not exist!");
+            return null;
+        }
+        List<MobileUser> users = new ArrayList<MobileUser>();
+        try {
+            String readPath = url.getPath();
+            File inFile = new File(readPath);
+            BufferedReader reader = new BufferedReader(new FileReader(inFile));
+            MobileUser user = new MobileUser();
+            while (reader.ready()) {
+                String line = reader.readLine();
+                StringTokenizer st = new StringTokenizer(line, ";");
+                if (st.hasMoreTokens()) {
+                    int userId = Integer.valueOf(st.nextToken().trim());
+                    String key = st.nextToken().trim();
+                    int value = Integer.valueOf(st.nextToken().trim());
+                    if ("insitute".equals(key)) {
+                        if (userId != 1) {
+                            user = new MobileUser();
+                        }
+                        user.setUserId(userId);
+                        user.setInstitute(value);
+                    } else if ("city".equals(key)) {
+                        user.setCity(value);
+                    } else {
+                        user.setCountry(value);
+                        users.add(user);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return users;
     }
 
     public static void parseCsvOld() {
@@ -440,11 +504,14 @@ public class DataParseUtils {
         List<ContentReceive> receives = DataParseUtils.getReceiveFromCsv();
         log.info(JSONObject.toJSONString(receives));
 
-        List<MobileUser> users = DataParseUtils.getMobileUsersFromCsv();
+        List<MobileUser> users = DataParseUtils.getParticipantsFromCsv();
         log.info(JSONObject.toJSONString(users));
 
         List<TrustRecord> records = DataParseUtils.getTrustRecordFromCsv();
-        log.info(JSONObject.toJSONString(receives));
+        log.info(JSONObject.toJSONString(records));
+
+        List<MobileUser> mobileUsers = DataParseUtils.getMobileUsersFromCsv();
+        log.info(JSONObject.toJSONString(mobileUsers));
      }
 
 }

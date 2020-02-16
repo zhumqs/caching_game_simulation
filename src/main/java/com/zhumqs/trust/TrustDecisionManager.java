@@ -46,16 +46,43 @@ public class TrustDecisionManager {
         int decision = getTrustDecision(fromUserId, toUserId, start, end, capacity, similarity, reciprocity, priorProbability);
 
         // record current decision
-        TrustRecord newRecord = new TrustRecord();
-        newRecord.setFromUserId(fromUserId);
-        newRecord.setToUserId(toUserId);
-        newRecord.setPriorProbability(priorProbability);
-        newRecord.setDecision(decision);
-        newRecord.setCooperativeCapacity(capacity);
-        newRecord.setPreferenceSimilarity(similarity);
-        newRecord.setSocialReciprocity(reciprocity);
-        newRecord.setTimestamp(end);
-        existRecords.add(newRecord);
+        boolean exist = false;
+        for (TrustRecord existRecord : existRecords) {
+            if (existRecord.getFromUserId() == fromUserId && existRecord.getToUserId() == toUserId) {
+                List<TrustRecord.TrustValue> values = existRecord.getValues();
+                if (values == null) {
+                    log.error("Tht trust relation between {} and {} has not been initialized!", fromUserId, toUserId);
+                    values = new ArrayList<>();
+                }
+                TrustRecord.TrustValue value = new TrustRecord.TrustValue();
+                value.setPriorProbability(priorProbability);
+                value.setDecision(decision);
+                value.setCooperativeCapacity(capacity);
+                value.setPreferenceSimilarity(similarity);
+                value.setSocialReciprocity(reciprocity);
+                value.setTimestamp(end);
+                values.add(value);
+                existRecord.setValues(values);
+                exist = true;
+                break;
+            }
+        }
+        if (!exist) {
+            TrustRecord newRecord = new TrustRecord();
+            newRecord.setFromUserId(fromUserId);
+            newRecord.setToUserId(toUserId);
+            List<TrustRecord.TrustValue> values = new ArrayList<>();
+            TrustRecord.TrustValue value = new TrustRecord.TrustValue();
+            value.setPriorProbability(priorProbability);
+            value.setCooperativeCapacity(capacity);
+            value.setDecision(decision);
+            value.setPreferenceSimilarity(similarity);
+            value.setSocialReciprocity(reciprocity);
+            value.setTimestamp(end);
+            values.add(value);
+            newRecord.setValues(values);
+            existRecords.add(newRecord);
+        }
         String csvFileName = "trust_record.csv";
         String csvPath = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName;
         CsvUtils.writeCsv(existRecords, csvPath);
@@ -150,15 +177,11 @@ public class TrustDecisionManager {
     private double getPriorProbability(int fromUserId, int toUserId, long start, long end) {
         // 默认值为0.5
         double priorProbability = 0.5;
-        double maxTimestamp = Double.MIN_VALUE;
-        for (TrustRecord record : existRecords) {
-            double timestamp = record.getTimestamp();
-            if (record.getFromUserId() == fromUserId && record.getToUserId() == toUserId
-                    && timestamp >= start && timestamp <= end) {
-                if (timestamp > maxTimestamp) {
-                    maxTimestamp = timestamp;
-                    priorProbability = record.getPriorProbability();
-                }
+        for (TrustRecord existRecord : existRecords) {
+            if (existRecord.getFromUserId() == fromUserId && existRecord.getToUserId() == toUserId) {
+                List<TrustRecord.TrustValue> values = existRecord.getValues();
+                priorProbability = values.get(values.size() - 1).getPriorProbability();
+                break;
             }
         }
         return priorProbability;
