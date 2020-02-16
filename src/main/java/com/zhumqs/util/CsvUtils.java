@@ -87,7 +87,7 @@ public class CsvUtils {
                 themeList.add((int)(1+Math.random()*(30-1+1)));
             }
             content.setThemeList(themeList);
-            content.setSize(ExperimentConstants.CONTEN_DEFAULT_SIZE);
+            content.setSize(ExperimentConstants.CONTENT_DEFAULT_SIZE);
             contents.add(content);
         }
         return contents;
@@ -101,25 +101,25 @@ public class CsvUtils {
                 record.setFromUserId(i);
                 record.setToUserId(j);
                 List<TrustRecord.TrustValue> values = new ArrayList<>();
-                TrustRecord.TrustValue value = new TrustRecord.TrustValue();
+                TrustRecord.TrustValue v1 = new TrustRecord.TrustValue();
                 // 0: unreliable 1: reliable 2: observed
-                value.setDecision(RandomUtils.getRandom(3));
-                value.setPriorProbability(0.5);
-                value.setTimestamp(System.currentTimeMillis() - 5 * 60 * 60 * 1000);
-                value.setSocialReciprocity(0);
-                value.setCooperativeCapacity(0);
-                value.setPreferenceSimilarity(0);
-                values.add(value);
+                v1.setDecision(RandomUtils.getRandom(3));
+                v1.setPriorProbability(0.5);
+                v1.setTimestamp(System.currentTimeMillis() - 5 * 60 * 60 * 1000);
+                v1.setSocialReciprocity(0);
+                v1.setCooperativeCapacity(0);
+                v1.setPreferenceSimilarity(0);
+                values.add(v1);
 
-                TrustRecord.TrustValue value1 = new TrustRecord.TrustValue();
+                TrustRecord.TrustValue v2 = new TrustRecord.TrustValue();
                 // 0: unreliable 1: reliable 2: observed
-                value1.setDecision(RandomUtils.getRandom(3));
-                value1.setPriorProbability(0.5);
-                value1.setTimestamp(System.currentTimeMillis() - 5 * 60 * 60 * 1000);
-                value1.setSocialReciprocity(0);
-                value1.setPreferenceSimilarity(0);
-                value1.setCooperativeCapacity(0);
-                values.add(value1);
+                v2.setDecision(RandomUtils.getRandom(3));
+                v2.setPriorProbability(0.5);
+                v2.setTimestamp(System.currentTimeMillis() - 5 * 60 * 60 * 1000);
+                v2.setSocialReciprocity(0);
+                v2.setPreferenceSimilarity(0);
+                v2.setCooperativeCapacity(0);
+                values.add(v2);
 
                 record.setValues(values);
                 mockRecords.add(record);
@@ -137,14 +137,21 @@ public class CsvUtils {
             user.setCity(RandomUtils.getRandomInterval(1, 20));
             user.setInstitute(RandomUtils.getRandomInterval(1, 30));
             user.setCountry(RandomUtils.getRandomInterval(1, 20));
-            user.setLongitude(32.114967 + RandomUtils.getRandomInterval(10, 800) * 0.000001 * RandomUtils.getPlusOrMinus());
-            user.setLatitude(118.928547 + RandomUtils.getRandomInterval(10, 800) * 0.000001 * RandomUtils.getPlusOrMinus());
+            user.setLongitude(ExperimentConstants.BASE_STATION_LOCATION_LONGITUDE
+                    + RandomUtils.getRandomInterval(10, 800) * 0.000001 * RandomUtils.getPlusOrMinus());
+            user.setLatitude(ExperimentConstants.BASE_STATION_LOCATION_LATITUDE
+                    + RandomUtils.getRandomInterval(10, 800) * 0.000001 * RandomUtils.getPlusOrMinus());
             users.add(user);
         }
         return users;
     }
 
     public static void main(String[] args) {
+        String csvFileName1 = "mobile_user.csv";
+        String csvPath1 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
+        log.info(csvPath1);
+        writeCsv(mockMobileUsers(), csvPath1);
+
         //String csvFileName = "content.csv";
         //String csvPath = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName;
         //log.info(csvPath);
@@ -154,12 +161,6 @@ public class CsvUtils {
         //String csvPath1 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
         //log.info(csvPath1);
         //writeCsv(mockTrustRecord(), csvPath1);
-
-        String csvFileName1 = "mobile_user.csv";
-        String csvPath1 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
-        log.info(csvPath1);
-        writeCsv(mockMobileUsers(), csvPath1);
     }
-
 }
 

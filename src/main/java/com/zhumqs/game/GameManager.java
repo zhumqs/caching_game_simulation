@@ -41,7 +41,7 @@ public class GameManager {
         return ExperimentConstants.PLACEMENT_COST + contentId >= 100 ? 2.0 : 1.0;
     }
 
-    public double getTotalDistance(int fromUserId, int toUserId, long start, long end) {
+    private double getTotalDistance(int fromUserId, int toUserId, long start, long end) {
         double physicalDistance = getPhysicalDistance(fromUserId, toUserId);
         double socialDistance = getSocialDistance(fromUserId, toUserId, start, end);
         if (socialDistance == 0) {
