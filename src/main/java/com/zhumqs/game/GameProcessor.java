@@ -141,7 +141,7 @@ public class GameProcessor {
         return numerator / denominator;
     }
 
-    public double getAverageAccessDelay() {
+    private double getAverageAccessDelay() {
         double total = 0.0;
         for (Map.Entry<Integer, Map<Integer, Double>> entry : preferenceMap.entrySet()) {
             Integer contentId = entry.getKey();
@@ -150,9 +150,11 @@ public class GameProcessor {
                 double preference = entry1.getValue();
                 double dataRate;
                 if (cacheMap.get(contentId).containsKey(userId)) {
-                    dataRate = getDataRateBetweenUsers();
+                    dataRate = getDataRate(ExperimentConstants.D2D_TRANSMIT_POWER,
+                            ExperimentConstants.D2D_BANDWIDTH);
                 } else {
-                    dataRate = getDataRateBetweenUserBs();
+                    dataRate = getDataRate(ExperimentConstants.BS_TRANSMIT_POWER,
+                            ExperimentConstants.MACRO_BANDWIDTH);
                 }
                 total += (preference * ExperimentConstants.CONTENT_DEFAULT_SIZE / dataRate);
             }
@@ -160,12 +162,8 @@ public class GameProcessor {
         return total / (mobileUsers.size() * contents.size());
     }
 
-    private double getDataRateBetweenUsers() {
-        return 0;
-    }
-
-    private double getDataRateBetweenUserBs() {
-        return 0;
+    private double getDataRate(double transmitPower, double bandwidth) {
+        return bandwidth * Math.log(1 + (transmitPower / ExperimentConstants.NOISE_POWER));
     }
 
     public static void main(String[] args) {
