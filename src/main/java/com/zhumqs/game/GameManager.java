@@ -2,6 +2,7 @@ package com.zhumqs.game;
 
 import com.zhumqs.constants.ExperimentConstants;
 import com.zhumqs.model.Content;
+import com.zhumqs.model.ContentRequest;
 import com.zhumqs.model.MobileUser;
 import com.zhumqs.model.TrustRecord;
 import com.zhumqs.trust.PreferenceSimilarityCalculator;
@@ -21,14 +22,18 @@ import java.util.Map;
 @Slf4j
 public class GameManager {
 
-    private static List<TrustRecord> trustRecords = new ArrayList<>();
-    private static List<MobileUser> mobileUsers = new ArrayList<>();
+    private static List<TrustRecord> trustRecords;
+    private static List<MobileUser> mobileUsers;
+    private static List<Content> contents;
+    private static List<ContentRequest> requests;
     private static PreferenceSimilarityCalculator similarityCalculator;
 
     public GameManager() {
         trustRecords = DataParseUtils.getTrustRecordFromCsv();
         mobileUsers = DataParseUtils.getMobileUsersFromCsv();
-        similarityCalculator = new PreferenceSimilarityCalculator();
+        requests = DataParseUtils.getRequestFromCsv();
+        contents = DataParseUtils.getContentsFromCsv();
+        similarityCalculator = new PreferenceSimilarityCalculator(requests, contents);
     }
 
     public double getNocacheCost(int fromUserId, int toUserId, long start, long end, Content content) {

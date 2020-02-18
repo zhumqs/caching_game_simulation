@@ -2,6 +2,7 @@ package com.zhumqs.game;
 
 import com.zhumqs.constants.ExperimentConstants;
 import com.zhumqs.model.Content;
+import com.zhumqs.model.ContentRequest;
 import com.zhumqs.model.MobileUser;
 import com.zhumqs.model.TrustRecord;
 import com.zhumqs.trust.PreferenceSimilarityCalculator;
@@ -19,6 +20,7 @@ public class GameProcessor {
     private static List<MobileUser> mobileUsers;
     private static List<Content> contents;
     private static List<TrustRecord> trustRecords;
+    private static List<ContentRequest> requests;
     private static Map<Integer, Map<Integer, List<Integer>>> cacheMap;
     private static Map<Integer, Map<Integer, Integer>> nocacheMap;
     private static Map<Integer, Map<Integer, Double>> costMap;
@@ -30,11 +32,12 @@ public class GameProcessor {
         mobileUsers = DataParseUtils.getMobileUsersFromCsv();
         contents = DataParseUtils.getContentsFromCsv();
         trustRecords = DataParseUtils.getTrustRecordFromCsv();
+        requests = DataParseUtils.getRequestFromCsv();
         cacheMap = new HashMap<>();
         nocacheMap = new HashMap<>();
         costMap = new HashMap<>();
         preferenceMap = new HashMap<>();
-        preferenceCalculator = new PreferenceSimilarityCalculator();
+        preferenceCalculator = new PreferenceSimilarityCalculator(requests, contents);
         gameManager = new GameManager();
     }
 
