@@ -74,20 +74,21 @@ public class CsvUtils {
     }
 
     public static void main(String[] args) {
+        String csvFileName = "content.csv";
+        String csvPath = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName;
+        log.info(csvPath);
+        writeCsv(DataMockUtils.mockContent(), csvPath);
+
         String csvFileName1 = "mobile_user.csv";
         String csvPath1 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
         log.info(csvPath1);
         writeCsv(DataMockUtils.mockMobileUsers(), csvPath1);
 
-        //String csvFileName = "content.csv";
-        //String csvPath = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName;
-        //log.info(csvPath);
-        //writeCsv(DataMockUtils.mockContent(), csvPath);
 
-        //String csvFileName1 = "trust_record.csv";
-        //String csvPath1 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
-        //log.info(csvPath1);
-        //writeCsv(DataMockUtils.mockTrustRecord(), csvPath1);
+        String csvFileName2 = "trust_record.csv";
+        String csvPath2 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
+        log.info(csvPath1);
+        writeCsv(DataMockUtils.mockTrustRecord(), csvPath1);
     }
 }
 

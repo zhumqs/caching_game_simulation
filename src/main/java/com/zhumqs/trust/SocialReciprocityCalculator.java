@@ -18,14 +18,16 @@ import java.util.*;
 @Slf4j
 public class SocialReciprocityCalculator {
 
-    private static List<ContentRequest> requestList = new ArrayList<ContentRequest>();
-    private static List<ContentTransmission> transmissionList = new ArrayList<ContentTransmission>();
-    private static List<ContentReceive> receiveList = new ArrayList<ContentReceive>();
+    private List<ContentRequest> requestList;
+    private List<ContentTransmission> transmissionList;
+    private List<ContentReceive> receiveList;
 
-    public SocialReciprocityCalculator() {
-        requestList = DataParseUtils.getRequestFromCsv();
-        receiveList = DataParseUtils.getReceiveFromCsv();
-        transmissionList = DataParseUtils.getTransmissionFromCsv();
+    public SocialReciprocityCalculator(List<ContentRequest> requestList,
+                                       List<ContentTransmission> transmissionLis,
+                                       List<ContentReceive> receiveList) {
+        this.requestList = requestList;
+        this.receiveList = receiveList;
+        this.transmissionList = transmissionLis;
     }
 
     public double getSocialReciprocity(int fromUserId, int toUserId, long start, long end) {
@@ -96,7 +98,8 @@ public class SocialReciprocityCalculator {
     }
 
     public static void main(String[] args) {
-        SocialReciprocityCalculator calculator = new SocialReciprocityCalculator();
+        SocialReciprocityCalculator calculator = new SocialReciprocityCalculator(DataParseUtils.getRequestFromCsv(),
+                DataParseUtils.getTransmissionFromCsv(), DataParseUtils.getReceiveFromCsv());
         int fromUserId = RandomUtils.getRandomInterval(1, 75);
         int toUserId = RandomUtils.getRandomInterval(1, 75);
         while (fromUserId == toUserId) {

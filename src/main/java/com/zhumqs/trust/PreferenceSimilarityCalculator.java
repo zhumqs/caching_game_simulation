@@ -17,12 +17,12 @@ import java.util.List;
 @Slf4j
 public class PreferenceSimilarityCalculator {
 
-    private static List<ContentRequest> requestList = new ArrayList<ContentRequest>();
-    private static List<Content> defaultContents = new ArrayList<Content>();
+    private List<ContentRequest> requestList;
+    private List<Content> defaultContents;
 
-    public PreferenceSimilarityCalculator() {
-        requestList = DataParseUtils.getRequestFromCsv();
-        defaultContents = DataParseUtils.getContentsFromCsv();
+    public PreferenceSimilarityCalculator(List<ContentRequest> requestList, List<Content> defaultContents) {
+        this.requestList = requestList;
+        this.defaultContents = defaultContents;
     }
 
     public double getUserPreferenceSimilarity(int userId1, int userId2, long start, long end) {
@@ -99,7 +99,8 @@ public class PreferenceSimilarityCalculator {
     }
 
     public static void main(String[] args) {
-        PreferenceSimilarityCalculator calculator = new PreferenceSimilarityCalculator();
+        PreferenceSimilarityCalculator calculator = new PreferenceSimilarityCalculator(DataParseUtils.getRequestFromCsv(),
+                DataParseUtils.getContentsFromCsv());
         int fromUserId = RandomUtils.getRandomInterval(1, 75);
         int toUserId = RandomUtils.getRandomInterval(1, 75);
         while (fromUserId == toUserId) {

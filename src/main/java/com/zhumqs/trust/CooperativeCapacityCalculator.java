@@ -17,14 +17,16 @@ import java.util.*;
 @Slf4j
 public class CooperativeCapacityCalculator {
 
-    private static List<ContentRequest> requestList = new ArrayList<ContentRequest>();
-    private static List<ContentReceive> receiveList = new ArrayList<ContentReceive>();
-    private static List<MobileUser> mobileUsers = new ArrayList<MobileUser>();
+    private List<ContentRequest> requestList;
+    private List<ContentReceive> receiveList;
+    private List<MobileUser> mobileUsers;
 
-    public CooperativeCapacityCalculator() {
-        requestList = DataParseUtils.getRequestFromCsv();
-        receiveList = DataParseUtils.getReceiveFromCsv();
-        mobileUsers = DataParseUtils.getMobileUsersFromCsv();
+    public CooperativeCapacityCalculator(List<ContentRequest> requestList,
+                                         List<ContentReceive> receiveList,
+                                         List<MobileUser> mobileUsers) {
+        this.receiveList = receiveList;
+        this.requestList = requestList;
+        this.mobileUsers = mobileUsers;
     }
 
     public double getCooperativeCapacity(int fromUserId, int toUserId, long start, long end) {
@@ -117,7 +119,8 @@ public class CooperativeCapacityCalculator {
     }
 
     public static void main(String[] args) {
-        CooperativeCapacityCalculator calculator = new CooperativeCapacityCalculator();
+        CooperativeCapacityCalculator calculator = new CooperativeCapacityCalculator(DataParseUtils.getRequestFromCsv(),
+                DataParseUtils.getReceiveFromCsv(), DataParseUtils.getMobileUsersFromCsv());
         int fromUserId = RandomUtils.getRandomInterval(1, 75);
         int toUserId = RandomUtils.getRandomInterval(1, 75);
         while (fromUserId == toUserId) {

@@ -1,7 +1,7 @@
 package com.zhumqs.trust;
 
 import com.zhumqs.constants.ExperimentConstants;
-import com.zhumqs.model.TrustRecord;
+import com.zhumqs.model.*;
 import com.zhumqs.util.CsvUtils;
 import com.zhumqs.util.DataParseUtils;
 import com.zhumqs.util.RandomUtils;
@@ -18,16 +18,21 @@ import java.util.List;
 @Slf4j
 public class TrustDecisionManager {
 
-    private static List<TrustRecord> existRecords = new ArrayList<>();
+    private static List<TrustRecord> existRecords;
     private static CooperativeCapacityCalculator capacityCalculator;
     private static PreferenceSimilarityCalculator similarityCalculator;
     private static SocialReciprocityCalculator reciprocityCalculator;
 
     public TrustDecisionManager() {
+        List<Content> contents = DataParseUtils.getContentsFromCsv();
+        List<MobileUser> users = DataParseUtils.getMobileUsersFromCsv();
+        List<ContentRequest> requests = DataParseUtils.getRequestFromCsv();
+        List<ContentReceive> receives = DataParseUtils.getReceiveFromCsv();
+        List<ContentTransmission> transmissions = DataParseUtils.getTransmissionFromCsv();
         existRecords = DataParseUtils.getTrustRecordFromCsv();
-        capacityCalculator = new CooperativeCapacityCalculator();
-        similarityCalculator = new PreferenceSimilarityCalculator();
-        reciprocityCalculator = new SocialReciprocityCalculator();
+        capacityCalculator = new CooperativeCapacityCalculator(requests, receives, users);
+        similarityCalculator = new PreferenceSimilarityCalculator(requests, contents);
+        reciprocityCalculator = new SocialReciprocityCalculator(requests, transmissions, receives);
     }
 
     /**
