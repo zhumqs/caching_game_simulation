@@ -221,7 +221,7 @@ public class DataParseUtils {
             BufferedReader reader = new BufferedReader(new FileReader(inFile));
             while (reader.ready()) {
                 String line = reader.readLine();
-                if (line.startsWith("#")) {
+                if (line.startsWith("contentId")) {
                     continue;
                 }
                 StringTokenizer st = new StringTokenizer(line, ";");

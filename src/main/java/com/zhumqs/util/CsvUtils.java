@@ -86,9 +86,9 @@ public class CsvUtils {
 
 
         String csvFileName2 = "trust_record.csv";
-        String csvPath2 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName1;
-        log.info(csvPath1);
-        writeCsv(DataMockUtils.mockTrustRecord(), csvPath1);
+        String csvPath2 = ExperimentConstants.CSV_DIRECTORY + "/" + csvFileName2;
+        log.info(csvPath2);
+        writeCsv(DataMockUtils.mockTrustRecord(), csvPath2);
     }
 }
 
